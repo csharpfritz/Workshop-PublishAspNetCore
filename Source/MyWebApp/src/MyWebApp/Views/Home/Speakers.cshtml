@@ -1,0 +1,71 @@
+﻿@{
+
+  ViewBag.Title = "Speaker List";
+
+}
+
+<section data-ng-app="speakerList">
+
+  <h2>Speaker List</h2>
+
+  <div data-ng-controller="myController">
+
+    <table id="grid" class="table table-bordered table-striped table-hover">
+
+      <thead>
+        <tr>
+          <th><a href="#" data-ng-click="orderByField='firstName'; orderByAsc=!orderByAsc;">First Name</a></th>
+          <th><a href="#" data-ng-click="orderByField='lastName'; orderByAsc=!orderByAsc;">Last Name</a></th>
+          <th><a href="#" data-ng-click="orderByField='company'; orderByAsc=!orderByAsc;">Company</a></th>
+          <th><a href="#" data-ng-click="orderByField='topic'; orderByAsc=!orderByAsc;">Topic</a></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr data-ng-repeat="speaker in speakerList |orderBy:orderByField:orderByAsc">
+          <td>{{speaker.firstName}}</td>
+          <td>{{speaker.lastName}}</td>
+          <td>{{speaker.company}}</td>
+          <td>{{speaker.topic}}</td>
+        </tr>
+      </tbody>
+
+    </table> 
+
+  </div>
+
+
+</section>
+
+
+
+@section scripts {
+
+  <script type="text/javascript" src="~/lib/angular/angular.js"></script>
+  <script type="text/javascript">
+
+    (function () {
+
+      angular.module("speakerList", []);
+
+      angular.module("speakerList").controller("myController", myController, ['$scope', '$http']);
+
+      function myController($scope, $http) {
+
+        $scope.orderByField = "lastName";
+        $scope.orderByAsc = false;
+
+        return $http.get("/api/speakerlist")
+          .success(function (data) {
+            console.log(data);
+            $scope.speakerList = data;
+          });
+
+      }
+
+    })();
+
+  </script>
+
+
+}

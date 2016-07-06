@@ -1,136 +1,150 @@
 ﻿<a name="HOLTop" ></a>
-# Deployment and Azure #
+# Publish, Deploy, and Docker with ASP.NET Core#
 
 ---
 
 <a name="Overview" ></a>
 ## Overview ##
 
-Microsoft Azure offers secure and flexible development, deployment and scaling options for any size web application. Leverage your existing tools to create and deploy applications without the hassle of managing infrastructure.
-
-Provision a production web application on your own in minutes by easily deploying content created using your favorite development tool. You can deploy an existing site directly from source control with support for **Git**, **GitHub**, **Bitbucket**, **CodePlex**, **TFS**, and even **Dropbox**. Deploy directly from your favorite IDE or from scripts using **PowerShell** in Windows or **CLI** tools running on any OS. Once deployed, keep your sites constantly up-to-date with support for continuous deployment.
-
-Microsoft Azure provides scalable, durable cloud storage, backup, and recovery solutions for any data, big or small. When deploying applications to a production environment, storage services such as Tables, Blobs and SQL Databases help you scale your application in the cloud.
-
-This module will show you the different topics you could encounter when deploying your site to production environments in Microsoft Azure.
+This workshop is designed to take you through some of the options you have available when configuring and deploying an application to a production-ready environment.  That could be a local web server, filesystem, Docker container, or the cloud. 
 
 <a name="Objectives" ></a>
 ### Objectives ###
 In this module, you'll see how to:
 
-- Create and deploy a Web Application to a Microsoft Azure Web App using Visual Studio
-- Change behavior of your app based on different deployment environments
-- Work with Multiple Deployments Slots in Azure
+- Publish a web application using Visual Studio
+- Apply Entity Framework Migrations to SQL Server
+- Take advantage of Environment Variables to configure an application
+- Get started with some Docker basics
+- Use a Docker hosted database service with ASP.NET Core
+- Publish to a Docker container
+- Scale a Docker Container collection 
 
 <a name="Prerequisites"></a>
 ### Prerequisites ###
 
 The following is required to complete this module:
 
-- [Visual Studio Community 2015][1] or greater
+- [Visual Studio Community 2015][1] or greater OR [Visual Studio Code][4] 
 - [ASP.NET Core 1.0][2]
+- [Docker][3]
 
 [1]: https://www.visualstudio.com/products/visual-studio-community-vs
-[2]: https://get.asp.net
+[2]: https://dot.net/core
+[3]: https://docker.com
+[4]: https://code.visualstudio.com
+
 
 > **Note:** You can take advantage of the [Visual Studio Dev Essentials]( https://www.visualstudio.com/en-us/products/visual-studio-dev-essentials-vs.aspx) subscription in order to get everything you need to build and deploy your app on any platform.
 
 <a name="Setup" ></a>
 ### Setup ###
-In order to run the exercises in this module, you'll need to set up your environment first.
-
-1. Open Windows Explorer and browse to the module's **Source** folder.
-1. Right-click **Setup.cmd** and select **Run as administrator** to launch the setup process that will configure your environment and install the Visual Studio code snippets for this module.
-1. If the User Account Control dialog box is shown, confirm the action to proceed.
-
-> **Note:** Make sure you've checked all the dependencies for this module before running the setup.
+In order to run the exercises in this module, you'll need download the contents of this [repository from GitHub](https://github.com/csharpfritz/Workshop-PublishAspNetCore)
 
 <a name="Exercises" ></a>
 ## Exercises ##
 This module includes the following exercises:
 
-1. [Build and Deploy from Visual Studio](#Exercise1)
-1. [Working with Environments in Visual Studio](#Exercise2)
-1. [Working with Multiple Deployment Slots](#Exercise3)
+1. [Build and Publish from Visual Studio](#Exercise1)
+1. [Working with Entity Framework Migrations](#Exercise2)
+1. [Use Environment Variables to configure an application](#Exercise3)
+1. [Get Started with Docker Basics](#Exercise4)
+1. [Switch to a Docker hosted Postgres database](#Exercise5)
+1. [Publish to a Docker Container](#Exercise5)
+1. [Scale Docker Containers](#Exercise6)
 
-
-Estimated time to complete this module: **60 minutes**
 
 >**Note:** When you first start Visual Studio, you must select one of the predefined settings collections. Each predefined collection is designed to match a particular development style and determines window layouts, editor behavior, IntelliSense code snippets, and dialog box options. The procedures in this module describe the actions necessary to accomplish a given task in Visual Studio when using the **General Development Settings** collection. If you choose a different settings collection for your development environment, there may be differences in the steps that you should take into account.
 
 <a name="Exercise1"></a>
-### Exercise 1: Build and Deploy from Visual Studio ###
-
-**Azure App Service Web Apps** is a fully managed platform that enables you to build, deploy and scale enterprise-grade web apps in seconds. Focus on your application code, and let Azure take care of the infrastructure to scale and securely run it for you.
-
-In this exercise you'll create a new Web site in Visual Studio based on the **ASP.NET Core 1.0 Web Application** project template and then publish the application to an **Azure App Service Web App**.
+### Exercise 1: Build and Publish from Visual Studio ###
 
 <a name="Ex1Task1"></a>
 #### Task 1 - Deploying a ASP.NET Core application to Azure ####
 
-1. Open **Visual Studio Community 2015** and select **File | New | Project...** to create a new solution.
+1. Open **Visual Studio Community 2015** and select **File | Open | Project / Soloution** and choose the **Source/MyWebApp.sln** solution file.
 
-1. In the **New Project** dialog box, select **ASP.NET Web Application** under the **Visual C# | Web** tab, and make sure **.NET Framework 4.6** is selected. Name the project _MyWebApp_, choose a **Location** and click **OK**.
+1. In the Solution Explorer, right-click **MyWebApp** and click **Publish**.
 
-    ![New ASP.NET Web Application project](Images/new-aspnet-web-application-project.png "New ASP.NET Web Application project")
+    ![Publish Context Menu](Images/new/01-publish.png)
 
-    _New ASP.NET Web Application project_
+    _Publish Context Menu_
 
-1. In the **New ASP.NET Project** dialog box, select the **Web Application** template under **ASP.NET 5 Templates**. Also, make sure that the **Authentication** option is set to **No Authentication**. Make sure the "**Host in the cloud**" option is not checked (you will run this manually). Click **OK** to continue.
+1. In the publish dialog, choose the **Custom** option
 
-    ![Creating a new project with the Web Application template](Images/creating-a-new-aspnet-project.png "Creating a new project with the Web Application template")
+    ![Selecting Custom Publish Option](Images/new/02-publish-custom.png)
 
-    _Creating a new project with the Web Application template_
+    _Custom Publish Option_
 
-1. Right-click the **MyWebApp** project and select **Publish...**. In the **Publish Web** dialog, click **Microsoft Azure App Service**.
+1. In the modal **New Custom Profile** dialog box, name your profile **Local Filesystem** and click **OK**  
 
-    ![Selecting Microsoft Azure App Service](Images/selecting-azure-app-service.png "Microsoft Azure App Service")
+1. Set the **Publish Method** to **File System** and the target location to **.\PublishOutput** and click **Next**
 
-    _Microsoft Azure App Service_
+    ![Configuring the Publish Connection](Images/new/03-publish-connection.png)
 
-1. Click **Add an account...**. to sign in to Visual Studio with your Azure account.
+    _Configure the Publish Connection_
 
-    ![Adding an account](Images/adding-an-account.png "Adding an account")
+1. In the **Publish Settings** screen, apply the following settings and click **Publish**:
 
-    _Adding an account_
+  * Configuration:  Release
+  * Target Framework: .NETCoreApp, Version=v1.0
+  * Target Runtime: Any
 
-1. Then, click **New...** to open the _Create App Service_ dialog box. The _Create App Service_ dialog box will appear. Fill the **Web App Name** and **Resource Group** fields. Then click the **New...** button next to **App Service Plan**.
+    ![Publish Settings](Images/new/04-publish-settings.png)
 
-    ![Create App Service dialog box](Images/01-CreateAppService.png "Create App Service dialog box")
+  _Publish Settings_
 
-    _Create App Service dialog box_
+You should now see your **Output Window** open and the build process for the application.  The results of the build should be deposited in the **Source/MyWebApp/src/PublishOutput** folder.  Open a command-prompt and navigate to that folder and test your application by running:
 
-1. Click **OK** in the Configure App Service Plan dialog.
+    dotnet MyWebApp.dll
 
-    ![Creating the App Service](Images/02-CreateAppServicePlan.png "Configure the App Service Plan")
+But... something went wrong, and there's a wonderfully helpful stack trace dumped all over your beautiful console window.  What went wrong?
 
-    _Configure the App Service Plan_
+<a name="#Exercise2"></a>
+### Exercise 2: Entity Framework Migrations ###
 
-1. Click the **Create** button in the Create App Service Plan and wait while Azure provisions your resources.
+Entity Framework Core has been updated and brings migrations to the cross-platform capabilities of .NET Core.  In this exercise, we're going to fix the problem from the previous exercise by applying our Entity Framework migrations and restarting the web server.
 
-1. Back in the **Publish Web** dialog, all the connection fields should be populated. Click **Next >**. In the settings tab, expand the **Target DNX Version** box to see the different possibilities and click **Publish** to publish the site.
+1.  Open a command-prompt and navigate to the **Source/MyWebApp/src/MyWebApp** folder.
 
-    ![Publishing the site to the new Microsoft Azure Web App](Images/publishing-the-site-to-azure.png "Publishing the site to the new Microsoft Azure Web App")
+1.  Execute the Entity Framework tools command with the dotnet command-line tool by typing:
 
-    _Publishing the site to the new Microsoft Azure Web App_
+    dotnet ef
 
-    Once publishing completes, the web app will be automatically launched in your browser (at **http://{yourwebappname}.azurewebsites.net**).
+You should be greeted by a helpful splashscreen of options and magic unicorns:
 
-    ![Web app published](Images/webapp-published.png "Web app published to Azure")
+![EF Console Splash Screen](Images/new/05-ef.png)
 
-    _Web app published to Azure_
+_Entity Framework Console Splash Screen_
 
-<a name="Exercise2"></a>
-### Exercise 2: Working with Environments in Visual Studio ###
+<ol>
+<li>The database that will be used is defined in the **appsettings.json** file as a value for the **SqlConnection** setting.  Apply the migrations to this instance of localdb with the command:<br/><br/>
+    <code>dotnet ef database update</code>
+<br/><br/>
+The database should be created for you and updated with the configuration of the models defined in our sample project.</li>
+
+<li>Browse back to the **PublishOutput** folder by executing the following command:
+
+    <br/><br/><code>cd PublishOutput</code><br/><br/>
+
+</li>
+
+<li>Launch the web server with the command:
+<br/><br/><code>dotnet MyWebApp.dll</code><br/><br/>
+
+... and you should now be able to browse to the application at [http://localhost:5000](http://localhost:5000)
+
+</li>
+
+<a name="Exercise3"></a>
+### Exercise 3: Use Environment Variables to Configure an Application ###
 
 ASP.NET Core introduces improved support for controlling application behavior across multiple environments, such as development, staging, and production. Environment variables are used to indicate which environment the application is running in, allowing the app to be configured appropriately.
 
-In this exercise, you'll add code to this application to change its behavior based on the active environment. You will use Visual Studio launch profiles to test different environments locally.
+ASP.NET Core uses a particular environment variable, ASPNETCORE_ENVIRONMENT (or Hosting:Environment), to describe the environment the application is currently running in. This variable can be set to any value you like, but three values are used by convention: Development, Staging, and Production.
 
-ASP.NET Core uses a particular environment variable, ASPNET_ENV (or Hosting:Environment), to describe the environment the application is currently running in. This variable can be set to any value you like, but three values are used by convention: Development, Staging, and Production.
-
-<a name="Ex2Task1"></a>
-#### Task 1 - Add Environment Specific Code ####
+<a name="Ex3Task1"></a>
+#### Task 1 - Output Environment Information ####
 
 1. Open the `Views\Shared\_Layout.cshtml` file in your editor. Observe the `Environment` TagHelper which renders its content only if the active environment matches one of the values in the `names` attribute.
 
@@ -162,7 +176,7 @@ ASP.NET Core uses a particular environment variable, ASPNET_ENV (or Hosting:Envi
     </footer>
     ```
 
-<a name="Ex2Task2"></a>
+<a name="Ex3Task2"></a>
 #### Task 2 - Create a Visual Studio Launch Profile ####
 
 1. Right-click on the project in solution explorer and click on properties.
@@ -189,115 +203,176 @@ ASP.NET Core uses a particular environment variable, ASPNET_ENV (or Hosting:Envi
 
 1. In the **Debug** Dropdown, select **IIS Express (Staging)** and launch your application. You should now see the environment name displayed in the footer of your web application.
 
-<a name="Exercise3"></a>
-### Exercise 3: Working with Multiple Deployment Slots ###
+<a name="Exercise4"></a>
+### Exercise 4: Get Started with Docker Basics
 
-**Azure App Service Web Apps** enables you to perform staged publishing. When you deploy your site, you can choose to deploy it to a separate deployment slot instead of the default production slot. And then swap the deployments in these two slots with no down time. This is really useful for validating changes before releasing to the public, incrementally integrating site content, and rolling back if changes are not working as expected.
+In this exercise, we will run our first Docker containers and verify that Docker Beta is running properly in our environment.  If Docker is started properly on your machine you should see a whale in the system tray:
 
-In this exercise, you'll deploy an application to the staging environment of your **Azure App Service Web Apps**. To do this, you'll create the Web App and provision the required components at the management portal, download a publish profile, and deploy from Visual Studio. You will then execute the application in this staging environment to verify its operation. Once you're satisfied that it's working according to your expectations, you'll promote the application to production.
+![Docker whale in the system tray](Images/new/06-DockerInTray.png)
 
-> **Note:** To enable staged publishing, the Web App must be on one of the Standard plans. Note that additional charges will be incurred if you upgrade your Web App to a Standard plan. For more information about pricing, see [App Service Pricing](http://azure.microsoft.com/en-us/pricing/details/app-service/).
+_Docker Whale Icon in the System Tray_
 
-<a name="Ex3Task1"></a>
-#### Task 1 - Scaling up your Azure Web App ####
+With the latest beta of Docker for Windows and Mac, you should be able to have Docker containers running in the background while you are working in Visual Studio.  We can get started with Docker commands by opening a command prompt or a Powershell prompt and start executing commands with the Docker command-line tool.
 
-1. Go to the [Azure Portal](https://portal.azure.com) and sign in using the Microsoft account associated with your subscription.
+1. Let's run our first Docker container with the command:
 
-1. Select **App Services** from the nav bar on portal.azure.com and select your previously created Web App.
+       docker run hello-world
 
-    ![Select App Service in Portal](Images/09-SelectAppServiceInPortal.png "Select App Service in Portal")
+   ... and you should have a nice message returned to you that verifies your Docker installation is working properly.
 
-    _Select App Service in Portal_
+1. We can then go further and run a Ubuntu Linux container and access a shell within that container with the command:
 
-1. Select **Scale Up (App Service Plan)** in the **Settings** blade of your web app. If your Web App is not on a **Standard** plan, select one by clicking the **Pricing tier** tile. For instance, select the **S1 Standard** plan.
+       docker run -it ubuntu bash
 
-    ![Web App Pricing tier](Images/web-app-pricing-tiers.png "Web App Pricing tier")
+   ... and you are now running Linux inside of a container on Windows.  The -it switch directs docker to start the container in **interactive mode** and to allocate a **terminal** for you to connect to.  The **ubuntu** argument is the name of the Docker image to start, and **bash** is the command to execute in the terminal we are connecting to.  
+   
+   Try some standard Linux commands to verify that you are truly operating in Linux.  When you are finished, execute the command `exit` to depart the Linux container.
 
-    _Web App Pricing tier_
+1. Next, execute the following command to see the containers that we just ran:
 
-    > Microsoft Azure offers 5 plans for users to run their Web Apps - Free, Shared, Basic, Standard and Premium. In Free and Shared, all Web Apps run in a multi-tenant environment and have quotas for CPU, Memory, and Network usage. You can mix and match which sites are Free (strict quotas) vs. Shared (more flexible quotas). The maximum number of free Web Apps may vary with your plan. In Standard, you choose which Web Apps run on dedicated virtual machines that correspond to the standard Azure compute resources. You can change the mode of your Web App by clicking the **Pricing tier** tile in the **Usage** section of the corresponding App Service plan blade.
+       docker ps --all
 
-1. Back in the **Settings** blade, select **Deployment slots**. Click the **Add Slot** command at the top and create a new slot named **staging**. Set your Web App as **Configuration Source** and then click **OK**.
+   You will be greeted with a list of containers and their state.  
 
-    ![Creating the staging deployment slot](Images/creating-deployment-slot.png "Creating the staging deployment slot")
+   ![Docker container state](Images/new/07-docker-containers.png)
 
-    _Creating the staging deployment slot_
+   _Docker container state_
 
-1. After a few seconds you'll see a new slot with the name of your Web App followed by _**-staging**_. Select it to navigate to the *staging Web App* settings.
+   _Notice:_  Each container is listed as 'Exited'.  These containers are no longer running. Also, they all have random system generated names reported in the last column.
 
-1. Select **Application Settings** in the **Settings** blade and add an **App Setting** named `Hosting:Environment` with a value of `Staging`
+1. We can then remove these containers by executing the following command for each of the listed containers 
 
-    ![Setting Staging Environment Variable](Images/14-SettingStagingEnvironment.png "Setting Staging Environment Variable")
+       docker rm d6f
 
-    _Setting Staging Environment Variable_
+   Where _d6f_ is the first three characters of the **CONTAINER ID** in the report.
 
-1. Download the **Publish Profile** for the staging slot from the Web app blade.
+<a name="Exercise5"></a>
+### Exercise 5: Use a Docker hosted Postgres database ###
 
-    ![Download publish profile](Images/11-GetPublishSettings.png "Download publish profile")
+Now that we have Docker running, lets move our test database to a container so that we can start and stop it, move it to another host, and manage the database like it was a virtual machine.  
 
-    _Download publish profile_
+1. Start a postgres database container by executing the following command at a command-line:
 
-1. In Visual Studio, right-click on the Project in **Solution Explorer** and select **Publish...**.
+       docker run -d -p 5432:5432 --name pg postgres
 
-1. In the **Publish Web** dialog, click the **Profile** tab and choose **Import**.
+   That command should return a long hexadecimal number that is the CONTAINER ID of the container that was just started.  Lets break down what Docker tasks this command performed:
 
-    ![Import Publish Settings](Images/12-ImportPublishSettings.png "Import Publish Settings")
+   * **run** started a new container from a _Docker Image_ called **postgres**  The image name is at the end of the command because all options must be declared first.  The postgres image was downloaded from the Docker Hub - a repository of Docker images available for the public to use and build on.
+   * **-d** instructs Docker to run in disconnected mode.  This means it will start the container in the background and return control of the command-line to you.
+   * **-p 5432:5432** declares that Docker needs to open a network port from the container to the host machine.  In this case, we are opening the port 5432 and passing it directly because that is the standard Postgres database port.  The format of this argument is in the form of  **host machine port** : **container port**
+   * **--name pg** declares a name for the container instead of a system generated name.  In this case, _pg_ is an abbreviation for Postgres. 
 
-    _Import Publish Settings_
+1. We can reconfigure our application to use the Postgres database by modifying **appsettings.json** in the **src/MyWebApp** folder and setting the _ConnectionStrings:Type_ value to **Postgres**
 
-1. Import the downloaded **Publish Profile**
+      ```json
+      {
+          "ConnectionStrings": {
+              "Type": "Postgres",
+      ```
 
-    > **Note**: Ensure you have downloaded the profile for your staging slot. The filename should end with *..(staging).publishsettings*
+1. Apply migrations to the Postgres database the same way we did the SQL Server database:
 
-    ![Select Publish Settings](Images/13-SelectPublishSettings.png "Select Publish Settings")
+       dotnet ef database update 
 
-    _Select Publish Settings_
+1. Update the footer of the **_Layout.cshtml** page to contain some additional information about the database type and the **HOSTNAME** environment variable:
 
-1. In the **Preview** tab on the **Publish Web** dialog, ensure you have selected the Web Deploy publish profile for your staging slot and then click Publish.
+      ```html
+       <footer>
+         <p>&copy; 2016 - WebApplicationBasic</p>
+         <p> Env: @HostingEnvironment.EnvironmentName - @Config["HOSTNAME"] - @Config["ConnectionStrings:Type"]</p>
+       </footer>
+       ```
+ 
+1. Launch the application from the **src/MyWebApp** folder with the command:
 
-<a name="Ex3Task2"></a>
-#### Task 2 - Publish a change to the staging slot ####
+       dotnet run
 
-1. In Visual Studio, use the **Solution Explorer** to open the `Views\Shared\_Layout.cshtml` file.
+   ... and then navigate your browser to the application at http://localhost:5000  Click through to the _Speaker List_ to see an Angular formatted grid with data presented from the Postgres database.
 
-1. Change the content of the **About** link to **About Us** 
+**BONUS CREDIT**
 
-    ```html
-    <li><a asp-controller="Home" asp-action="About">About</a></li>
-    ```
+Examine the source code and determine where the speaker list is created and add your name and topic to the list.  Rebuild and run your application to verify you added yourself to the seed data properly.  
 
-1. Right-click the **MyWebApp** project and select **Publish...**. In the **Publish Web** dialog, select your staging slot and click Publish.
+<a name="Exercise6"></a>
+### Exercise 6: Publish Your Application to a Docker container ###
 
-    ![Publish to Staging](Images/15-PublishToStagingSlot.png "Publish to Staging")
+Next, we will add Docker support to our project which will allow us to manage the configuration of the application as it runs in the container through a series of configuration files.  This will also allow us to easily deploy a container with our application completely configured the way it should be run to another environment.
 
-    _Publish to Staging_
+1. Right Click on the project name in the Solution Explorer and select **Add | Docker Support**
 
-<a name="Ex3Task3"></a>
-#### Task 3 - Promote your staging slot to production ####
+  ![Add Docker Support to the application](Images/new/08-add-dockersupport.png)
 
-1. Go back to the Azure Portal and navigate to the *staging Web App*.
+  _Add Docker Support to a Project_
 
-1. Click the **Swap** command at the top.
+1. Several files will be added to the project, and configuration updates applied to allow Visual Studio 2015 to work with the Docker container.  Get started running the application in a container by clicking the **Debug | Start** menu item to build, deploy to a container, and attach the Visual Studio debugger.
 
-    ![Swap to production](Images/swap-to-production.png "Swap to production")
+1. This will generate a docker-compose.yml file in your project.  We will update this file to control how our application is started and run inside of the container.  Modify the contents of the file to contain the following:
 
-    _Swap to production_
+        version: '2'
 
-1. Verify that the **Source** targets the staging slot and the **Destination** targets production, and then click **OK** to proceed with the swap operation. Azure will immediately swap the content of the production site with the content of the staging site.
+        services:
+        db:
+          image: postgres
+          ports:
+            - "5432:5432"
+        mywebapp:
+          image: username/mywebapp
+          environment:
+            "ConnectionStrings:Type": Postgres
+            "ConnectionStrings:PgConnection": Server=db;User ID=postgres;
+          depends_on:
+              - db
+          ports:
+            - "80:80"
 
-    > **Note:** Some settings from the staged version will automatically be copied to the production version (e.g. connection string overrides, handler mappings, etc.) but others will stay the same (e.g. DNS endpoints, SSL bindings, etc.).
+    
+1. Run a **Build | Build MyWebApp** from within Visual Studio 2015.  This will generate a Docker Image that we can use to create our containers.
 
-    ![Confirming swap operation](Images/confirm-swap-operation.png "Confirming swap operation")
+1. From the command-line, let's start the collection of our database and web server with this command:
 
-    _Confirming swap operation_
+       docker-compose up -d
 
-1. Once the swap is complete, browse to your Web App in both slots. You can verify that the production site is now the one with the deployed application.
+    This will start the containers and they will run in the background.  There is a quirk with the way that the containers start, because the web service depends on the Postgres database and the migrations are not applied, nor is the database ready to service the web requests.
 
-    > **Note:** You might need to refresh your browser to clear the cache. In Microsoft Edge, you can do this by pressing **CTRL+F5**.
+1. Let's apply the entity framework migrations to the Postgres container with the command:
 
-    ![Web App running in the production environment](Images/web-app-running-in-prod.png "Web App running in the production environment")
+        dotnet ef database update
 
-    _Web App running in the production environment_
+1. Restart the web service in the docker cluster with the command:
+
+        docker-compose scale mywebapp=1    
+
+
+At this point, you should be able to navigate to http://localhost and see the results of your docker containers running.
+
+**BONUS**
+
+Update your **docker-container.yml** file to contain the following to enable a load-balancer and the ability to scale your web application:
+
+
+        version: '2'
+
+        services:
+        db:
+          image: postgres
+          ports:
+            - "5432:5432"
+        lb:
+          image: dockercloud/haproxy
+          links:
+            - mywebapp
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+          ports:
+            - "80:80"
+            - "1936:1936"
+        mywebapp:
+          image: username/mywebapp
+          environment:
+            "ConnectionStrings:Type": Postgres
+            "ConnectionStrings:PgConnection": Server=db;User ID=postgres;
+          depends_on:
+              - db
 
 ---
 
@@ -306,8 +381,6 @@ In this exercise, you'll deploy an application to the staging environment of you
 
 By completing this module, you should have:
 
-- Created and deployed a Web Application to a Microsoft Azure Web App using Visual Studio
+- Published and deployed a Web Application to aDocker Container using Visual Studio
 - Changed behavior of your app based on different deployment environments
-- Worked with Multiple Deployments Slots in Azure
-
-> **Note:** You can take advantage of the [Visual Studio Dev Essentials](https://www.visualstudio.com/en-us/products/visual-studio-dev-essentials-vs.aspx) subscription in order to get everything you need to build and deploy your app on any platform.
+- Worked with composing multiple Docker containers 
