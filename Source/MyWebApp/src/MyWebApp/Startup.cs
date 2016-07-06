@@ -23,6 +23,12 @@ namespace MyWebApp
           .AddJsonFile("appsettings.json", true, true)
           .AddEnvironmentVariables();
       Configuration = builder.Build();
+
+      if (string.IsNullOrEmpty(Configuration["HOSTNAME"]))
+      {
+        Configuration["HOSTNAME"] = System.Environment.MachineName;
+      }
+
     }
 
     public IConfigurationRoot Configuration { get; set; }
@@ -31,8 +37,18 @@ namespace MyWebApp
     public void ConfigureServices(IServiceCollection services)
     {
 
-      services.AddDbContext<Models.SpeakerDbContext>(options =>
-        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+      if (Configuration.GetSection("ConnectionStrings")["Type"] == "Postgres")
+      {
+        services
+          .AddEntityFrameworkNpgsql()
+          .AddDbContext<Models.SpeakerDbContext>(options =>
+          options.UseNpgsql(Configuration.GetConnectionString("PgConnection")));
+      }
+      else
+      {
+        services.AddDbContext<Models.SpeakerDbContext>(options =>
+          options.UseSqlServer(Configuration.GetConnectionString("SqlConnection")));
+      }
 
       services.AddSingleton(typeof(IConfigurationRoot), Configuration);
 

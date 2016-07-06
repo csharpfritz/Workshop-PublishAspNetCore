@@ -24,9 +24,6 @@ namespace MyWebApp.Models
     public static void EnsureSeedData(this SpeakerDbContext context)
     {
 
-      if (context.AllMigrationsApplied())
-      {
-
         if (!context.Speakers.Any())
         {
 
@@ -44,8 +41,6 @@ namespace MyWebApp.Models
           context.SaveChanges();
 
         }
-
-      }
 
     }
 
