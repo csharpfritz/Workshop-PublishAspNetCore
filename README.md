@@ -125,7 +125,7 @@ The database should be created for you and updated with the configuration of the
 
 <li>Browse back to the **PublishOutput** folder by executing the following command:
 
-    <br/><br/><code>cd PublishOutput</code><br/><br/>
+    cd PublishOutput
 
 </li>
 
